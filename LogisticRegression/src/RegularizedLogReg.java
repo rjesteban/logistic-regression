@@ -1,3 +1,6 @@
+
+import Jama.Matrix;
+
 class RegularizedLogReg extends LogReg{
 
 

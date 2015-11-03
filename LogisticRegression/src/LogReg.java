@@ -1,3 +1,6 @@
+
+import Jama.Matrix;
+
 class LogReg extends MultivariateLR{
 	
 
@@ -13,6 +16,7 @@ class LogReg extends MultivariateLR{
      * @param numIterations
      * @return 
      */
+    @Override
     GradientDescentValues gradientDescent(Matrix X, Matrix y, Matrix theta, double alpha, int numIterations){
         //Write equivalent Java code for the Octave code below.
         
