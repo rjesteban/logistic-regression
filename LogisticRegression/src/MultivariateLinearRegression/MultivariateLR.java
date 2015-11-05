@@ -1,3 +1,5 @@
+package MultivariateLinearRegression;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -8,13 +10,13 @@
  *
  * @author DCS
  */
+import util.Util;
 import Jama.Matrix;
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.QuickChart;
 import com.xeiam.xchart.SwingWrapper;
 import java.io.*;
 import java.util.ArrayList;
-
 
 
 /**
@@ -26,6 +28,14 @@ public class MultivariateLR {
     protected static double alpha = 0.01;
     protected static int num_iters = 400;
 
+    public static void setAlpha(double _alpha){
+        alpha = _alpha;
+    }
+    
+    public static void setIterations(int _num_iters){
+        num_iters = _num_iters;
+    }
+    
     /**
      *FEATURENORMALIZE Normalizes the features in X 
      *   FEATURENORMALIZE(X) returns a normalized version of X where
@@ -36,7 +46,7 @@ public class MultivariateLR {
      * @param X the matrix to be normalized
      * @return the object the contains the matrix values of X, mu and sigma
      */
-     protected static FeatureNormalizationValues featureNormalize(Matrix X) {
+    public FeatureNormalizationValues featureNormalize(Matrix X) {
         //Write equivalent Java code for the Octave code below.
         // You need to set these values correctly. 
         //Octave: X_norm = X;
@@ -100,7 +110,7 @@ public class MultivariateLR {
      * @param num_iters
      * @return 
      */
-     protected static GradientDescentValues gradientDescent(Matrix X, Matrix y, Matrix theta, double alpha, int num_iters) {
+    public GradientDescentValues gradientDescent(Matrix X, Matrix y, Matrix theta, double alpha, int num_iters) {
         //Write equivalent Java code for the Octave code below.
 
         //Initialize some useful values.
@@ -150,7 +160,7 @@ public class MultivariateLR {
      * @param theta
      * @return 
      */
-     protected static double computeCostMulti(Matrix X, Matrix y, Matrix theta) {
+    public double computeCostMulti(Matrix X, Matrix y, Matrix theta) {
         //Write equivalent Java code for the Octave code below.
         // Initialize some useful values
         //Octave: m = length(y); % number of training examples
@@ -175,7 +185,7 @@ public class MultivariateLR {
      * @param y
      * @return 
      */
-    protected static Matrix normalEqn(Matrix X, Matrix y) {
+    public Matrix normalEqn(Matrix X, Matrix y) {
         //Write equivalent Java code for the Octave code below.
 
         //Octave: theta = zeros(size(X, 2), 1);
@@ -187,69 +197,7 @@ public class MultivariateLR {
         return (X.transpose().times(X)).inverse().times(X.transpose().times(y));        
     }
 }
-class GradientDescentValues {
 
-    Matrix theta;
-    Matrix costHistory;
-    
-    public GradientDescentValues(Matrix _theta, Matrix _costHistory){
-        theta = _theta;
-        costHistory = _costHistory;
-    }
-    
-    public Matrix getTheta() {
-        return theta;
-    }
-
-    public void setTheta(Matrix theta) {
-        this.theta = theta;
-    }
-
-    public Matrix getCostHistory() {
-        return costHistory;
-    }
-
-    public void setCostHistory(Matrix costHistory) {
-        this.costHistory = costHistory;
-    }
-}
-
-class FeatureNormalizationValues {
-
-    Matrix X;
-    Matrix mu;
-    Matrix sigma;
-    
-    public FeatureNormalizationValues(Matrix _X, Matrix _mu, Matrix _sigma){
-        X = _X;
-        mu = _mu;
-        sigma = _sigma;
-    }
-
-    public Matrix getX() {
-        return X;
-    }
-
-    public void setX(Matrix X) {
-        this.X = X;
-    }
-
-    public Matrix getMu() {
-        return mu;
-    }
-
-    public void setMu(Matrix mu) {
-        this.mu = mu;
-    }
-
-    public Matrix getSigma() {
-        return sigma;
-    }
-
-    public void setSigma(Matrix sigma) {
-        this.sigma = sigma;
-    }
-}
 
 class TestMLR extends Thread{
     
@@ -269,6 +217,8 @@ class TestMLR extends Thread{
         //Write the corresponding Java code for the Octave code below between /**...*/
 
         long start = System.currentTimeMillis();
+        
+        MultivariateLR lr = new MultivariateLR();
 
         System.out.println("Loading data...");
         //code for loading data
@@ -284,12 +234,12 @@ class TestMLR extends Thread{
         //JAVA CODE HERE
         //==============
         String file = "ex1data2.txt";
-        Matrix X = data(file, 1, 2);
-        Matrix y = data(file, 3);
+        Matrix X = Util.data(file, 1, 2);
+        Matrix y = Util.data(file, 3);
         int m = y.getRowDimension();
 
         System.out.println("First 10 examples from the dataset: n");
-        fprintfMatrix(X, y, 10);
+        Util.fprintfMatrix(X, y, 10);
         
         //==============
 
@@ -303,8 +253,8 @@ class TestMLR extends Thread{
          */
         //JAVA CODE HERE
         //==============
-        FeatureNormalizationValues f = MultivariateLR.featureNormalize(X);
-        X = insertX0(f.X);
+        FeatureNormalizationValues f = lr.featureNormalize(X);
+        X = Util.insertX0(f.X);
         //==============
         System.out.println("Running gradient descent...");
         //code for performing gradientDescent
@@ -333,7 +283,7 @@ class TestMLR extends Thread{
         Matrix theta = new Matrix(X.getColumnDimension(),1);
         Matrix J_history = new Matrix(MultivariateLR.num_iters,1);
         
-        GradientDescentValues g = MultivariateLR.gradientDescent(X, y, theta, MultivariateLR.alpha, MultivariateLR.num_iters);
+        GradientDescentValues g = lr.gradientDescent(X, y, theta, MultivariateLR.alpha, MultivariateLR.num_iters);
         theta = g.getTheta();
         J_history = g.getCostHistory();
         
@@ -404,10 +354,10 @@ class TestMLR extends Thread{
         //price = 0; % You should change this
 
         
-        X = data(file, 1, 2);
-        X = insertX0(X);
+        X = Util.data(file, 1, 2);
+        X = Util.insertX0(X);
         
-        theta = MultivariateLR.normalEqn(X, y);
+        theta = lr.normalEqn(X, y);
         System.out.println("Theta computed from the normal equations: ");
         theta.print(3, 4);
         System.out.println();
@@ -449,108 +399,4 @@ class TestMLR extends Thread{
 
     }
 
-    //-----------------custom made functions----------------------
-    /**
-     * data returns vector data set with specified column
-     * file: data file
-     * col: starting index
-     * @param filename
-     * @param start
-     * @return Matrix
-     */
-    private static Matrix data(String filename, int col) throws FileNotFoundException, IOException {
-        BufferedReader bf = new BufferedReader(new FileReader(filename));
-        col--;
-        String line = bf.readLine();
-        String colval = "";
-        ArrayList<Double> training_examples = new ArrayList<Double>();
-
-        while (line != null) {
-            colval = line.split(",")[col];
-            training_examples.add(Double.valueOf(colval));
-            line = bf.readLine();
-        }
-        
-        int r = training_examples.size();
-        Matrix matrix = new Matrix(r, 1);
-        
-        for (int i = 0; i < training_examples.size(); i++) 
-            matrix.set(i, 0, training_examples.get(i));
-
-        return matrix;
-    }
-
-    /**
-     * data returns data set using matrix with specified column
-     * file: data file
-     * start: starting index
-     * end: end index
-     * @param filename
-     * @param start
-     * @return Matrix
-     */
-    private static Matrix data(String filename, int start, int end) throws FileNotFoundException, IOException {
-        start--; //index's sake
-        end--;
-        
-        BufferedReader bf = new BufferedReader(new FileReader(filename));
-        String line = bf.readLine();
-        String[] field = line.split(",");
-        ArrayList<double[]> training_examples = new ArrayList<double[]>();
-        
-        while (line != null) {
-            field = line.split(",");
-            double[] data = new double[(end-start)+1];
-            
-            for (int i = start; i <= end-start; i++) {
-                data[i] = Double.parseDouble(field[i]);
-            }
-            
-            training_examples.add(data);
-            line = bf.readLine();
-        }
-
-        int c = training_examples.get(0).length;
-        int r = training_examples.size();
-
-        Matrix matrix = new Matrix(r, c);
-        for (int rr = 0; rr < r; rr++) {
-            for (int cc = 0; cc < c; cc++) {
-                matrix.set(rr, cc, training_examples.get(rr)[cc]);
-            }
-        }
-
-        return matrix;
-    }
-    
-    private static Matrix insertX0(Matrix F){
-        Matrix _X = new Matrix(F.getRowDimension(),F.getColumnDimension()+1);
-        for(int r=0;r<F.getRowDimension();r++){
-            for(int c=0;c<=F.getColumnDimension();c++){
-                if(c==0)
-                    _X.set(r, c, 1);
-                else
-                    _X.set(r, c, F.get(r, c-1));
-            }
-        }
-        return _X;
-    }
-    
-    private static void fprintfMatrix(Matrix X, Matrix Y, int rows){
-        for(int r=0;r<rows;r++){
-            for(int c=0;c<X.getColumnDimension();c++){
-                System.out.print(X.get(r, c) + " ");
-            }
-            System.out.println(" " + Y.get(r, 0));
-        }
-    }
-    
-    public static void fprintfMatrix(Matrix X, int rows){
-        for(int r=0;r<rows;r++){
-            for(int c=0;c<X.getColumnDimension();c++){
-                System.out.print(X.get(r, c) + " ");
-            }
-            System.out.println();
-        }
-    }
 }
