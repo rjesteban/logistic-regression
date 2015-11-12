@@ -125,4 +125,23 @@ public final class Util {
         return matrix;
     }
     
+    public static Matrix getRow(int row, Matrix m){
+        Matrix n = new Matrix(1, m.getRowDimension());
+        for(int i=0;i<m.getRowDimension();i++){
+            n.set(0,i,m.get(0, i));
+        }
+        return n;
+    }
+    
+    public static Matrix ones(int m,int n){
+        Matrix matrix = new Matrix(m, n);
+        
+        for(int r=0; r<m; r++){
+            for(int c=0; c<n; c++){
+                matrix.set(r, c, 1);
+            }
+        }
+        return matrix;
+    }
+    
 }

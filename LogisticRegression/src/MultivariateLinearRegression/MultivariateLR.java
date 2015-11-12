@@ -136,7 +136,7 @@ public class MultivariateLR {
              J_history.set(iter, 0, computeCostMulti(X, y, theta));
              theta = theta.minus(X.transpose().times(X.times(theta).minus(y)).times(alpha/m));
              
-             
+                
              //declare convergence if current cost is less than 0.001 by the previous cost
              if(iter>0){
                  double diff = J_history.get(iter-1, 0)-J_history.get(iter, 0);
