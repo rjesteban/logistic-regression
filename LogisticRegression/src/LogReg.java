@@ -117,7 +117,7 @@ public class LogReg extends MultivariateLR{
 			%
 		*/
             int m = y.getRowDimension();
-            double J = 0;
+            Matrix JJ;
             int row = theta.getRowDimension();
             int col = theta.getColumnDimension();
             
@@ -125,20 +125,31 @@ public class LogReg extends MultivariateLR{
             double c = 1.d/m;
             
             Matrix hyp = sigmoid(X.times(theta));
+            
             Matrix one = Util.ones(m, 1);
+            Matrix J = new Matrix(1,1);
             
-            J = y.uminus().times(log(hyp)).minus(one.minus(y).arrayTimes(one.minus(hyp))).get(0, 0);
-            return null;
+            JJ = y.uminus().arrayTimes(log(hyp)).minus(one.minus(y).
+                    arrayTimes(log(one.minus(hyp)))).times(c);
             
-
+            for(int r=0; r<JJ.getRowDimension();r++)
+                J.set(0, 0, J.get(0, 0) + JJ.get(r, 0));
+            
+            //--------------------partial derivative-----------------------
+            grad = hyp.minus(y).transpose().times(X).times(c);
+            return new CostFunctionValues(J, grad);
+            
 	}
         
         Matrix log(Matrix hyp){
-            for(int r=0; r<hyp.getRowDimension(); r++){
-                hyp.set(r, 0, Math.log(hyp.get(r, 0)));
+            int row = hyp.getRowDimension();
+            int col = hyp.getColumnDimension();
+            Matrix j = new Matrix(row, col);
+            for(int r=0; r<row; r++){
+                j.set(r, 0, Math.log(hyp.get(r, 0)));
             }
             
-            return hyp;
+            return j;
         }
 
 	/*
@@ -147,17 +158,6 @@ public class LogReg extends MultivariateLR{
 	%   J = SIGMOID(z) computes the sigmoid of z.
 	*/
 	Matrix sigmoid(Matrix z){
-		/*
-		% You need to return the following variables correctly 
-		g = zeros(size(z));
-
-		% ====================== YOUR CODE HERE ======================
-		% Instructions: Compute the sigmoid of each value of z (z can be a matrix,
-		%               vector or scalar).
-
-		g = 1./(1+exp(-z));
-		% ============================================================
-		*/
             int row = z.getRowDimension();
             int col = z.getColumnDimension();
             Matrix g = new Matrix(row, col);
@@ -240,7 +240,6 @@ public class LogReg extends MultivariateLR{
 		*/
 		//===== JAVA CODE HERE ====
             FeatureNormalizationValues fnv = lr.featureNormalize(X);
-
 		/**
 			plotData(X, y);
 
@@ -294,9 +293,9 @@ public class LogReg extends MultivariateLR{
             
             CostFunctionValues cfv = lr.costFunction(initial_theta, X, y);
 
-            System.out.println("Cost at initial theta (zeroes): " + cfv.getJ());
+            System.out.println("Cost at initial theta (zeroes): " + cfv.getJ().get(0,0));
             System.out.println("Gradient at initial theta (zeroes):");
-            System.out.println(cfv.getGrad());
+                cfv.getGrad().transpose().print(1, 3);
 
             return;
 

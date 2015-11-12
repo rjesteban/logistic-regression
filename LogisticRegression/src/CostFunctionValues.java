@@ -16,6 +16,11 @@ public class CostFunctionValues {
     private Matrix grad;
     // add getters and setters     
 
+    public CostFunctionValues(Matrix _J, Matrix _grad){
+        J = _J;
+        grad = _grad;
+    }
+    
     /**
      * @return the J
      */
