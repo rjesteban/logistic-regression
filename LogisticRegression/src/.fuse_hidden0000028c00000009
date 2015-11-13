@@ -223,13 +223,18 @@ public class LogReg extends MultivariateLR{
 	double accuracy(Matrix p, Matrix y){
 		//mean(double(p == y)) * 100
             double sum = 0.0;
+            System.out.println("p: " + p.getRowDimension() + " " + p.getColumnDimension());
+            System.out.println("y: " + y.getRowDimension() + " " + y.getColumnDimension());
+            
+            
+            Matrix k = p.arrayTimes(y);
             
             for(int i=0; i<p.getRowDimension(); i++){
-                if(p.get(i,0)==y.get(i,0))
+                if(k.get(i,0)==1)
                     sum++;
             }
-            return (sum/p.getRowDimension())*100;
-            
+            return sum*100/p.getRowDimension();
+
 	}
 
 
@@ -356,12 +361,12 @@ public class LogReg extends MultivariateLR{
 
 	    */
 		//===== JAVA CODE HERE ====
+            Matrix _X = new Matrix(2,1);
+            X.set(1,0,45);
+            X.set(2,0,85);
             
-            Matrix _X = new Matrix(3,1);
-            _X.set(0,0,1);
-            _X.set(1,0,((45-fnv.getMu().get(0, 0))/fnv.getSigma().get(0, 0)));
-            _X.set(2,0,((85-fnv.getMu().get(0, 1))/fnv.getSigma().get(0, 1)));
-            
+            FeatureNormalizationValues ff = lr.featureNormalize(_X);
+            _X = ff.getX();
             
             Matrix prob = lr.sigmoid(gdv.getTheta().transpose().times(_X));
 
@@ -370,6 +375,7 @@ public class LogReg extends MultivariateLR{
             prob.print(3, 3);
             
             Matrix p = lr.predict(gdv.getTheta(), X);
+            
 		/**
 		fprintf('Train Accuracy: %f\n', mean(double(p == y)) * 100);
 		*/

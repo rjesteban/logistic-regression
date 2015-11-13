@@ -20,6 +20,9 @@ public class GradientDescentValues {
         theta = _theta;
         costHistory = _costHistory;
     }
+
+    public GradientDescentValues() {
+    }
     
     public Matrix getTheta() {
         return theta;

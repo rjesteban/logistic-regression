@@ -48,11 +48,29 @@ public class LogReg extends MultivariateLR{
         
         
         
+//        for(int iter=0;iter<numIterations;iter++){
+//            CostFunctionValues cfv = costFunction(theta, X, y);
+//            J_history.set(iter, 0, cfv.getJ().get(0, 0));
+//            theta = theta.minus(cfv.getGrad().times(alpha));
+//            theta.print(3,7);
+//
+//            //theta = theta.minus(X.transpose().times(sigmoid(X.times(theta)).minus(y)).times(alpha/Double.valueOf(m)));
+//            //theta = theta.minus(X.transpose().times(sigmoid(X.times(theta)).minus(y)).times(alpha/m));
+//            
+//        }
+
         for(int iter=0;iter<numIterations;iter++){
-            CostFunctionValues cfv = costFunction(theta, X, y);
-            J_history.set(iter, 0, cfv.getJ().get(0, 0));
-            theta = theta.minus(cfv.getGrad().times(alpha));
+        
+        
+        
+        
         }
+        
+        
+        
+        System.out.println("cost:");
+        J_history.print(2, 4);
+        
         
         // Save the cost J in every iteration    
         //Octave: J_history(iter) = costFunction(theta, X, y);
@@ -167,7 +185,7 @@ public class LogReg extends MultivariateLR{
             Matrix g = new Matrix(row, col);
             
             for(int r=0; r<row; r++){
-                g.set(r, 0, (1/(1+Math.exp(-z.get(r, 0)))));
+                g.set(r, 0, (1/(1+Math.exp(z.get(r, 0)))));
             }
             return g;
 	}
@@ -201,18 +219,11 @@ public class LogReg extends MultivariateLR{
 		end
 		% =========================================================================
 		*/
-            int m = X.getRowDimension();
-            Matrix p = new Matrix(m,1);
-            
-            Matrix h = sigmoid(X.times(theta));
-            
-            for(int i=0 ; i<m; i++){
-                if(h.get(i,0)>=0.5)
-                    p.set(i, 0, 1);
-                else
-                    p.set(i, 0, 0);
-            }
-            return p;
+
+
+
+
+
 
 	}
 
@@ -222,14 +233,9 @@ public class LogReg extends MultivariateLR{
 	*/
 	double accuracy(Matrix p, Matrix y){
 		//mean(double(p == y)) * 100
-            double sum = 0.0;
-            
-            for(int i=0; i<p.getRowDimension(); i++){
-                if(p.get(i,0)==y.get(i,0))
-                    sum++;
-            }
-            return (sum/p.getRowDimension())*100;
-            
+
+
+
 	}
 
 
@@ -356,26 +362,14 @@ public class LogReg extends MultivariateLR{
 
 	    */
 		//===== JAVA CODE HERE ====
-            
-            Matrix _X = new Matrix(3,1);
-            _X.set(0,0,1);
-            _X.set(1,0,((45-fnv.getMu().get(0, 0))/fnv.getSigma().get(0, 0)));
-            _X.set(2,0,((85-fnv.getMu().get(0, 1))/fnv.getSigma().get(0, 1)));
-            
-            
-            Matrix prob = lr.sigmoid(gdv.getTheta().transpose().times(_X));
 
-            System.out.print("For a student with scores 45 and 85, we predict an"
-                    + " admission probability of ");
-            prob.print(3, 3);
-            
-            Matrix p = lr.predict(gdv.getTheta(), X);
+
 		/**
 		fprintf('Train Accuracy: %f\n', mean(double(p == y)) * 100);
 		*/
 		//===== JAVA CODE HERE ====
 
-            System.out.println("Train accuracy: " + lr.accuracy(p, y));
+
 
 
 	}	
