@@ -24,25 +24,6 @@ public class LogReg extends MultivariateLR{
      */
     @Override
     public GradientDescentValues gradientDescent(Matrix X, Matrix y, Matrix theta, double alpha, int numIterations){
-        //Write equivalent Java code for the Octave code below.
-        
-        //Initialize some useful values.
-        //Octave: m = length(y); % number of training examples
-
-        //create a matrix that stores cost history
-        //Octave: J_history = zeros(num_iters, 1);
-
-        //Loop thru numIterations
-        //Octave:for iter = 1:num_iters
-        
-        // ====================== YOUR CODE HERE ======================
-        // Instructions: Perform a single gradient step on the parameter vector
-        //               theta. 
-        //
-        // Hint: While debugging, it can be useful to print out the values
-        //       of the cost function (computeCostMulti) and gradient here.
-        //
-
         int m = y.getRowDimension();
         Matrix J_history = new Matrix(numIterations,1);
         
@@ -54,8 +35,6 @@ public class LogReg extends MultivariateLR{
             theta = theta.minus(cfv.getGrad().times(alpha));
         }
         
-        // Save the cost J in every iteration    
-        //Octave: J_history(iter) = costFunction(theta, X, y);
         return new GradientDescentValues(theta, J_history);
     }
 
@@ -66,26 +45,6 @@ public class LogReg extends MultivariateLR{
 		%   w.r.t. to the parameters.
 	*/
 	double costFunctionGD(Matrix theta, Matrix X, Matrix y){
-		/**
-			% Initialize some useful values
-			m = length(y); % number of training examples
-
-			% You need to return the following variables correctly 
-			J = 0;
-			grad = zeros(size(theta));
-
-			% ====================== YOUR CODE HERE ======================
-			% Instructions: Compute the cost of a particular choice of theta.
-			%               You should set J to the cost.
-			%               Compute the partial derivatives and set grad to the partial
-			%               derivatives of the cost w.r.t. each parameter in theta
-			%
-			% Note: grad should have the same dimensions as theta
-			%
-			% h = compute hypothesis
-			% J = cost function
-			%
-		*/
             CostFunctionValues cfv = costFunction(theta, X, y);
             return cfv.getJ().get(0, 0);
 
@@ -99,27 +58,6 @@ public class LogReg extends MultivariateLR{
 		%   w.r.t. to the parameters.
 	*/
 	CostFunctionValues costFunction(Matrix theta, Matrix X, Matrix y){
-		/**
-			% Initialize some useful values
-			m = length(y); % number of training examples
-
-			% You need to return the following variables correctly 
-			J = 0;
-			grad = zeros(size(theta));
-
-			% ====================== YOUR CODE HERE ======================
-			% Instructions: Compute the cost of a particular choice of theta.
-			%               You should set J to the cost.
-			%               Compute the partial derivatives and set grad to the partial
-			%               derivatives of the cost w.r.t. each parameter in theta
-			%
-			% Note: grad should have the same dimensions as theta
-			%
-			% h = compute hypothesis
-			% J = cost function
-			% grad = gradient
-			%
-		*/
             int m = y.getRowDimension();
             int row = theta.getRowDimension();
             int col = theta.getColumnDimension();
@@ -180,27 +118,6 @@ public class LogReg extends MultivariateLR{
 	%   threshold at 0.5 (i.e., if sigmoid(theta'*x) >= 0.5, predict 1)
 	*/
 	Matrix predict(Matrix theta, Matrix X){
-		/*
-		m = size(X, 1); % Number of training examples
-
-		% You need to return the following variables correctly
-		p = zeros(m, 1);
-
-		% ====================== YOUR CODE HERE ======================
-		% Instructions: Complete the following code to make predictions using
-		%               your learned logistic regression parameters. 
-		%               You should set p to a vector of 0's and 1's
-		%
-		for i=1:m
-		  h = sigmoid(X(i,:)*theta)
-		  if h >= 0.5
-		     p(i) = 1;
-		  else
-		     p(i) = 0;
-		  end
-		end
-		% =========================================================================
-		*/
             int m = X.getRowDimension();
             Matrix p = new Matrix(m,1);
             
@@ -221,7 +138,6 @@ public class LogReg extends MultivariateLR{
 		fprintf('Train Accuracy: %f\n', );		
 	*/
 	double accuracy(Matrix p, Matrix y){
-		//mean(double(p == y)) * 100
             double sum = 0.0;
             
             for(int i=0; i<p.getRowDimension(); i++){
@@ -237,24 +153,10 @@ public class LogReg extends MultivariateLR{
 	public static void main(String[] args) throws FileNotFoundException, IOException{
             
             LogReg lr = new LogReg();
-            
-		/**
-			%% Load Data
-			%  The first two columns contains the exam scores and the third column
-			%  contains the label.
-
-			data = load('ex2data1.txt');
-			X = data(:, [1, 2]); y = data(:, 3);
-		*/
-		//===== JAVA CODE HERE ====
-            
+                        
             Matrix X = Util.data("ex2data1.txt", 1, 2);
             Matrix y = Util.data("ex2data1.txt", 3);		
 
-		/*
-		[X mu sigma] = featureNormalize(X);
-		*/
-		//===== JAVA CODE HERE ====
             FeatureNormalizationValues fnv = lr.featureNormalize(X);
 		/**
 			plotData(X, y);
@@ -271,38 +173,6 @@ public class LogReg extends MultivariateLR{
 		//===== JAVA CODE HERE ====
 
 
-
-
-		/**
-
-			Compute Cost and Gradient
-			%  Setup the data matrix appropriately, and add ones for the intercept term
-			[m, n] = size(X);
-
-			% Add intercept term to x and X_test
-			X = [ones(m, 1) X];
-
-			% Initialize fitting parameters
-			initial_theta = zeros(n + 1, 1);
-
-			% Compute and display initial cost and gradient
-			[cost, grad] = costFunction(initial_theta, X, y);
-
-			fprintf('Cost at initial theta (zeros): %f\n', cost);
-			fprintf('Gradient at initial theta (zeros): \n');
-			fprintf(' %f \n', grad);
-			cost =  0.20350
-			theta =
-
-			  -25.16127
-			    0.20623
-			    0.20147
-
-
-			
-
-		*/
-		//===== JAVA CODE HERE ====
             X = fnv.getX();
             X = Util.insertX0(X);
             Matrix initial_theta = new Matrix(X.getColumnDimension(), 1);
@@ -313,28 +183,6 @@ public class LogReg extends MultivariateLR{
             System.out.println("Gradient at initial theta (zeroes):");
             cfv.getGrad().print(1, 3);
 
-		/**
-			Optimizing using GD
-	        % Choose some alpha value
-	        alpha = 0.1;
-	        num_iters = 1000;
-
-	        % Init Theta and Run Gradient Descent 
-	        theta = zeros(3, 1);
-	        [theta, J_history] = gradientDescentMulti(X, y, theta, alpha, num_iters);
-	        
-	        % Plot the convergence graph
-	        figure;
-	        plot(1:numel(J_history), J_history, '-b', 'LineWidth', 2);
-	        xlabel('Number of iterations');
-	        ylabel('Cost J');
-
-	        % Display gradient descent's result
-	        fprintf('Theta computed from gradient descent: \n');
-	        fprintf(' %f \n', theta);
-	        */
-
-	    //===== JAVA CODE HERE ====
             double alpha = 0.1;
             int num_iters = 1000;
             
@@ -344,18 +192,6 @@ public class LogReg extends MultivariateLR{
 
             System.out.println("Theta computed from gradient descent:");
             gdv.getTheta().print(3,3);
-
-	    /**
-	    Predict and Accuracies
-	    prob = sigmoid([1 45 85] * theta);
-		fprintf(['For a student with scores 45 and 85, we predict an admission ' ...
-		         'probability of %f\n\n'], prob);
-
-		% Compute accuracy on our training set
-		p = predict(theta, X);
-
-	    */
-		//===== JAVA CODE HERE ====
             
             Matrix _X = new Matrix(3,1);
             _X.set(0,0,1);
@@ -370,10 +206,6 @@ public class LogReg extends MultivariateLR{
             prob.print(3, 3);
             
             Matrix p = lr.predict(gdv.getTheta(), X);
-		/**
-		fprintf('Train Accuracy: %f\n', mean(double(p == y)) * 100);
-		*/
-		//===== JAVA CODE HERE ====
 
             System.out.println("Train accuracy: " + lr.accuracy(p, y));
 
