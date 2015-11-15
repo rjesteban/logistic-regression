@@ -160,4 +160,24 @@ public final class Util {
         return matrix;
     }
     
+    public static Matrix pow(Matrix X, int pow){
+        Matrix N = X.copy();
+
+        for(int r=0;r<N.getRowDimension();r++){
+            N.set(r, 0, Math.pow(N.get(r, 0),pow));
+        }
+        return N;
+    }
+    
+    public static Matrix log(Matrix hyp){
+        int row = hyp.getRowDimension();
+        int col = hyp.getColumnDimension();
+        Matrix j = new Matrix(row, col);
+        for(int r=0; r<row; r++){
+            j.set(r, 0, Math.log(hyp.get(r, 0)));
+        }
+
+        return j;
+    }
+        
 }

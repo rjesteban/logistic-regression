@@ -9,56 +9,17 @@ import util.DataPlot;
 import util.Util;
 
 public class LogReg extends MultivariateLR{
-	
-
-
-	/**
-     * GRADIENTDESCENTMULTI Performs gradient descent to learn theta
-        theta = GRADIENTDESCENTMULTI(x, y, theta, alpha, num_iters) updates theta by
-        taking num_iters gradient steps with learning rate alpha
-     * @param X
-     * @param y
-     * @param theta
-     * @param alpha
-     * @param numIterations
-     * @return 
-     */
-    @Override
-    public GradientDescentValues gradientDescent(Matrix X, Matrix y, Matrix theta, double alpha, int numIterations){
-        int m = y.getRowDimension();
-        Matrix J_history = new Matrix(numIterations,1);
-        
-        
-        
-        for(int iter=0;iter<numIterations;iter++){
-            CostFunctionValues cfv = costFunction(theta, X, y);
-            J_history.set(iter, 0, cfv.getJ().get(0, 0));
-            theta = theta.minus(cfv.getGrad().times(alpha));
-        }
-        return new GradientDescentValues(theta, J_history);
-    }
-
     /**
-		%COSTFUNCTION Compute cost and gradient for logistic regression
-		%   J = COSTFUNCTION(theta, X, y) computes the cost of using theta as the
-		%   parameter for logistic regression and the gradient of the cost
-		%   w.r.t. to the parameters.
-	*/
-    double costFunctionGD(Matrix theta, Matrix X, Matrix y){
-        CostFunctionValues cfv = costFunction(theta, X, y);
-        return cfv.getJ().get(0, 0);
+            %COSTFUNCTIONREG Compute cost and gradient for logistic regression with regularization
+            %   J = COSTFUNCTIONREG(theta, X, y, lambda) computes the cost of using
+            %   theta as the parameter for regularized logistic regression and the
+            %   gradient of the cost w.r.t. to the parameters. 
+    */
 
-    }
-
-
-	/**
-		%COSTFUNCTION Compute cost and gradient for logistic regression
-		%   J = COSTFUNCTION(theta, X, y) computes the cost of using theta as the
-		%   parameter for logistic regression and the gradient of the cost
-		%   w.r.t. to the parameters.
-	*/
-    CostFunctionValues costFunction(Matrix theta, Matrix X, Matrix y){
+    CostFunctionValues costFunction(Matrix theta, Matrix X, Matrix y, double lambda){
+        
         int m = y.getRowDimension();
+        //CostFunctionValues cfv = costFunction(theta, X, y);
         int row = theta.getRowDimension();
         int col = theta.getColumnDimension();
 
@@ -70,8 +31,8 @@ public class LogReg extends MultivariateLR{
         Matrix one = Util.ones(m, 1);
         Matrix J = new Matrix(1,1);
 
-        Matrix JJ = y.uminus().arrayTimes(log(hyp)).minus(one.minus(y).
-                arrayTimes(log(one.minus(hyp)))).times(c);
+        Matrix JJ = y.uminus().arrayTimes(Util.log(hyp)).minus(one.minus(y).
+                arrayTimes(Util.log(one.minus(hyp)))).times(c);
 
         for(int r=0; r<JJ.getRowDimension();r++)
             J.set(0, 0, J.get(0, 0) + JJ.get(r, 0));
@@ -79,20 +40,48 @@ public class LogReg extends MultivariateLR{
         //--------------------partial derivative-----------------------
         Matrix grad = X.transpose().times(hyp.minus(y)).times(c);
 
-        return new CostFunctionValues(J, grad);
-
-    }
         
-    Matrix log(Matrix hyp){
-        int row = hyp.getRowDimension();
-        int col = hyp.getColumnDimension();
-        Matrix j = new Matrix(row, col);
-        for(int r=0; r<row; r++){
-            j.set(r, 0, Math.log(hyp.get(r, 0)));
+        //============= add regularization term to cost ===============
+        
+        Matrix thet = theta.getMatrix(1, theta.getRowDimension()-1, 0, 0);
+        thet = Util.pow(thet, 2).times(lambda/2*m);
+        Matrix k = new Matrix(1,1);
+        
+        for(int r=0; r<thet.getRowDimension(); r++){
+            k.set(0,0,k.get(0,0)+thet.get(r, 0));
         }
 
-        return j;
+        J.plusEquals(k);
+        
+        //============= gradient: add regularization term ===============
+        
+        thet = theta.getMatrix(1, theta.getRowDimension()-1, 0, 0);
+        thet.timesEquals(lambda/m);
+        
+        for(int r=1; r< grad.getRowDimension(); r++){
+            grad.set(r, 0, grad.get(r,0)+thet.get(r-1, 0));
+        }
+        
+        return new CostFunctionValues(J, grad);
     }
+    
+    public GradientDescentValues gradientDescent(Matrix X, Matrix y, 
+            Matrix theta, double alpha, int numIterations, double lambda){
+        int m = y.getRowDimension();
+        Matrix J_history = new Matrix(numIterations,1);
+        
+        
+        
+        for(int iter=0;iter<numIterations;iter++){
+            CostFunctionValues cfv = costFunction(theta, X, y, lambda);
+            J_history.set(iter, 0, cfv.getJ().get(0, 0));
+            theta = theta.minus(cfv.getGrad().times(alpha));
+        }
+        
+        return new GradientDescentValues(theta, J_history);
+    }
+        
+        
 
     /*
     function g = sigmoid(z)
@@ -132,7 +121,6 @@ public class LogReg extends MultivariateLR{
         return p;
 
     }
-
 
     /**
             fprintf('Train Accuracy: %f\n', );		
@@ -179,7 +167,7 @@ public class LogReg extends MultivariateLR{
         X = Util.insertX0(X);
         Matrix initial_theta = new Matrix(X.getColumnDimension(), 1);
 
-        CostFunctionValues cfv = lr.costFunction(initial_theta, X, y);
+        CostFunctionValues cfv = lr.costFunction(initial_theta, X, y, 0);
 
         System.out.println("Cost at initial theta (zeroes): " + cfv.getJ().get(0,0));
         System.out.println("Gradient at initial theta (zeroes):");
@@ -190,7 +178,7 @@ public class LogReg extends MultivariateLR{
 
         Matrix theta = new Matrix(initial_theta.getRowDimension(),initial_theta.getColumnDimension());
         GradientDescentValues gdv = lr.gradientDescent(X, y, theta, alpha, 
-                num_iters);
+                num_iters, 0);
 
         System.out.println("Theta computed from gradient descent:");
         gdv.getTheta().print(3,3);
