@@ -51,6 +51,22 @@ public final class Util {
         }
         return _X;
     }
+    
+    public static Matrix append(Matrix F, Matrix vector){
+        Matrix _X = new Matrix(F.getRowDimension(),F.getColumnDimension()+1);
+        for(int r=0;r<F.getRowDimension();r++){
+            for(int c=0;c<=F.getColumnDimension();c++){
+                if(c==F.getColumnDimension())
+                    _X.set(r, c, vector.get(r,0));
+                else
+                    _X.set(r, c, F.get(r, c));
+            }
+        }
+        return _X;
+    
+    }
+    
+    
 
     /**
      * data returns vector data set with specified column

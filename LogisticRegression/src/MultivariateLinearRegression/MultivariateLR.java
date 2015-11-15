@@ -12,11 +12,8 @@ package MultivariateLinearRegression;
  */
 import util.Util;
 import Jama.Matrix;
-import com.xeiam.xchart.Chart;
-import com.xeiam.xchart.QuickChart;
-import com.xeiam.xchart.SwingWrapper;
 import java.io.*;
-import java.util.ArrayList;
+import util.CostPlot;
 
 
 /**
@@ -25,17 +22,7 @@ import java.util.ArrayList;
  */
 public class MultivariateLR {
 
-    protected static double alpha = 0.01;
-    protected static int num_iters = 400;
-
-    public static void setAlpha(double _alpha){
-        alpha = _alpha;
-    }
-    
-    public static void setIterations(int _num_iters){
-        num_iters = _num_iters;
-    }
-    
+   
     /**
      *FEATURENORMALIZE Normalizes the features in X 
      *   FEATURENORMALIZE(X) returns a normalized version of X where
@@ -199,19 +186,7 @@ public class MultivariateLR {
 }
 
 
-class TestMLR extends Thread{
-    
-    double[] J;
-    
-    public TestMLR(double[] _J){
-        J = _J;
-    }
-    
-    @Override
-    public void run() {
-        Chart c = QuickChart.getChart("Cost x iterations plot","iterations","J(theta)",null,null,J);
-        new SwingWrapper(c).displayChart();
-    }
+class TestMLR{
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
         //Write the corresponding Java code for the Octave code below between /**...*/
@@ -280,17 +255,20 @@ class TestMLR extends Thread{
         //JAVA CODE HERE
         //==============
         //------alpha and num_iters already in class MultivariateLR-----
-        Matrix theta = new Matrix(X.getColumnDimension(),1);
-        Matrix J_history = new Matrix(MultivariateLR.num_iters,1);
         
-        GradientDescentValues g = lr.gradientDescent(X, y, theta, MultivariateLR.alpha, MultivariateLR.num_iters);
+        double alpha = 0.01;
+        int num_iters = 400;
+        
+        Matrix theta = new Matrix(X.getColumnDimension(),1);
+        
+        GradientDescentValues g = lr.gradientDescent(X, y, theta, alpha, num_iters);
         theta = g.getTheta();
-        J_history = g.getCostHistory();
+        Matrix J_history = g.getCostHistory();
         
         //**********PLOTTING****************
         //-----> create new thread for faster calculation while plotting :D
         //test mlr constructor gets the dataset for y: J-theta
-        new Thread(new TestMLR(J_history.getRowPackedCopy())).start();
+        new Thread(new CostPlot(J_history.getRowPackedCopy())).start();
         //==============
         System.out.println("Estimating price...");
 
@@ -309,13 +287,12 @@ class TestMLR extends Thread{
          */
         //JAVA CODE HERE
         //==============
-        double price = 0.0;
         
         Matrix val1 = new Matrix(X.getColumnDimension(),1);
         val1.set(0, 0, 1);
         val1.set(1,0,((1650-f.mu.get(0, 0))/f.sigma.get(0, 0)));
         val1.set(2,0,((3-f.mu.get(0, 1))/f.sigma.get(0, 1)));
-        price = theta.transpose().times(val1).get(0, 0);
+        double price = theta.transpose().times(val1).get(0, 0);
         System.out.println();
         
         System.out.println("Theta computed from gradient descent: ");
