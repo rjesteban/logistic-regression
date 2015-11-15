@@ -15,15 +15,15 @@ public class GradientDescentValues {
 
     Matrix theta;
     Matrix costHistory;
-    
-    public GradientDescentValues(Matrix _theta, Matrix _costHistory){
+
+    public GradientDescentValues(Matrix _theta, Matrix _costHistory) {
         theta = _theta;
         costHistory = _costHistory;
     }
 
     public GradientDescentValues() {
     }
-    
+
     public Matrix getTheta() {
         return theta;
     }

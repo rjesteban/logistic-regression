@@ -6,21 +6,21 @@ import Jama.Matrix;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author rjesteban
  */
 public class CostFunctionValues {
+
     private Matrix J;
     private Matrix grad;
     // add getters and setters     
 
-    public CostFunctionValues(Matrix _J, Matrix _grad){
+    public CostFunctionValues(Matrix _J, Matrix _grad) {
         J = _J;
         grad = _grad;
     }
-    
+
     /**
      * @return the J
      */

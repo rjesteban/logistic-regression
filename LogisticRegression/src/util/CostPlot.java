@@ -13,21 +13,22 @@ import com.xeiam.xchart.SwingWrapper;
  *
  * @author rjesteban
  */
-public class CostPlot extends Plot{
+public class CostPlot extends Plot {
+
     double[] J;
-    
-    public CostPlot(double[] _J){
+
+    public CostPlot(double[] _J) {
         J = _J;
     }
-    
+
     @Override
     public void run() {
-        Chart c = new Chart(500,500);
+        Chart c = new Chart(500, 500);
         c.addSeries("cost", null, J).setLineStyle(SeriesLineStyle.NONE);
         c.setChartTitle("Cost x iterations plot");
         c.setXAxisTitle("Cost");
         c.setYAxisTitle("Plot");
         new SwingWrapper(c).displayChart("Cost Plot");
     }
-    
+
 }
