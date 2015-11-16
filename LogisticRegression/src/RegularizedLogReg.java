@@ -87,7 +87,7 @@ public class RegularizedLogReg extends LogReg {
          */
 
         //===== JAVA CODE HERE ====
-        double alpha = 0.05;
+        double alpha = 1;
         int num_iters = 1000;
 
         GradientDescentValues gdv = rlr.gradientDescent(X, y, initial_theta, alpha, num_iters, lambda);

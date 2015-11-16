@@ -43,21 +43,19 @@ public class LogReg extends MultivariateLR {
 
         //============= add regularization term to cost ===============
         Matrix thet = theta.getMatrix(1, theta.getRowDimension() - 1, 0, 0);
-        thet = Util.pow(thet, 2).times(lambda / 2 * m);
+        thet = Util.pow(thet, 2).times(lambda / (2 * m));
         Matrix k = new Matrix(1, 1);
 
         for (int r = 0; r < thet.getRowDimension(); r++) {
             k.set(0, 0, k.get(0, 0) + thet.get(r, 0));
         }
-
         J.plusEquals(k);
-
         //============= gradient: add regularization term ===============
         thet = theta.getMatrix(1, theta.getRowDimension() - 1, 0, 0);
         thet.timesEquals(lambda / m);
 
         for (int r = 1; r < grad.getRowDimension(); r++) {
-            grad.set(r, 0, grad.get(r, 0) + thet.get(r - 1, 0));
+            grad.set(r, 0, (grad.get(r, 0) + thet.get(r - 1, 0)));
         }
 
         return new CostFunctionValues(J, grad);
