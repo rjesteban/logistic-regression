@@ -2,6 +2,7 @@
 import Jama.Matrix;
 import MultivariateLinearRegression.GradientDescentValues;
 import java.io.IOException;
+import util.CostPlot;
 import util.DataPlot;
 import util.Util;
 
@@ -86,7 +87,7 @@ public class RegularizedLogReg extends LogReg {
          */
 
         //===== JAVA CODE HERE ====
-        double alpha = 1;
+        double alpha = 0.05;
         int num_iters = 1000;
 
         GradientDescentValues gdv = rlr.gradientDescent(X, y, initial_theta, alpha, num_iters, lambda);
@@ -96,6 +97,9 @@ public class RegularizedLogReg extends LogReg {
 
         Matrix p = rlr.predict(gdv.getTheta(), X);
         System.out.println("Train Accuracy: " + rlr.accuracy(p, y));
+        
+        CostPlot cp = new CostPlot(gdv.getCostHistory().getRowPackedCopy());
+        new Thread(cp).start();
 
     }
 

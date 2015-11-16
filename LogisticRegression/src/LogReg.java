@@ -5,6 +5,7 @@ import MultivariateLinearRegression.GradientDescentValues;
 import MultivariateLinearRegression.MultivariateLR;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import util.CostPlot;
 import util.DataPlot;
 import util.Util;
 
@@ -177,6 +178,9 @@ public class LogReg extends MultivariateLR {
         _X.set(1, 0, ((45 - fnv.getMu().get(0, 0)) / fnv.getSigma().get(0, 0)));
         _X.set(2, 0, ((85 - fnv.getMu().get(0, 1)) / fnv.getSigma().get(0, 1)));
 
+        CostPlot cp = new CostPlot(gdv.getCostHistory().getRowPackedCopy());
+        new Thread(cp).start();
+        
         Matrix prob = lr.sigmoid(gdv.getTheta().transpose().times(_X));
 
         System.out.print("For a student with scores 45 and 85, we predict an"
