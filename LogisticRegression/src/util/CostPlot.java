@@ -24,7 +24,7 @@ public class CostPlot extends Plot {
     @Override
     public void run() {
         Chart c = new Chart(500, 500);
-        c.addSeries("cost", null, J).setLineStyle(SeriesLineStyle.NONE);
+        c.addSeries("cost", null, J).setLineStyle(SeriesLineStyle.SOLID);
         c.setChartTitle("Cost x iterations plot");
         c.setXAxisTitle("Cost");
         c.setYAxisTitle("Plot");
